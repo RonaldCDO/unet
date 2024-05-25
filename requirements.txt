@@ -1,0 +1,5 @@
+torch==2.0.1
+python-dotenv==1.0.1
+matplotlib==3.7.1
+numpy==1.26.0
+pandas==2.0.1
