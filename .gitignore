@@ -1,4 +1,5 @@
 # folders
+src/inference/*
 src/data/*.jpg
 src/data/manual_test/*
 src/data/manual_test_masks/*

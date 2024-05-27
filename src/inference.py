@@ -11,7 +11,7 @@ import numpy as np
  
 load_dotenv()
 
-def pred_show_image_grid(data_path, model_pt, device):
+def pred_show_image_grid(data_path, model_pt, device, inference_path):
     model = Unet(in_channels=3, num_classes=1).to(device)
     model.load_state_dict(torch.load(model_pt, map_location=torch.device(device)))
     image_dataset = PlantSegmentationDataset(data_path, test=True)
@@ -70,9 +70,10 @@ def pred_show_image_grid(data_path, model_pt, device):
             ax.imshow(plot_images[3*len(image_dataset) + img_idx])
         ax.set_title(titles[img_type_idx])
         ax.axis('off')
+    plt.savefig(f'{inference_path}group_image_inference')
     plt.show()
  
-def single_image_inference(img_pt, model_pt, device):
+def single_image_inference(img_pt, model_pt, device, inference_path):
     model= Unet(in_channels=3, num_classes=1).to(device)
     model.load_state_dict(torch.load(model_pt, map_location=torch.device(device)))
     model.eval()
@@ -128,16 +129,18 @@ def single_image_inference(img_pt, model_pt, device):
         else:
             plt.imshow(overlay)
             plt.title('Segmentation Overlay')
+    plt.savefig(f'{inference_path}single_image_inference.png')
     plt.show()
 
 if __name__ == '__main__':
     SINGLE_IMG_PATH=os.getenv('SINGLE_IMG_PATH')
     DATA_PATH=os.getenv('DATA_PATH')
     MODEL_PATH=os.getenv('MODEL_PATH')
+    INFERENCE_PATH=os.getenv('INFERENCE_PATH')
 
     device = 'cuda' if torch.cuda.is_available() else 'cpu'
-    pred_show_image_grid(DATA_PATH, MODEL_PATH, device)
-    # single_image_inference(SINGLE_IMG_PATH, MODEL_PATH, device)
+    pred_show_image_grid(DATA_PATH, MODEL_PATH, device, INFERENCE_PATH)
+    # single_image_inference(SINGLE_IMG_PATH, MODEL_PATH, device, INFERENCE_PATH)
 
 
 
