@@ -145,8 +145,8 @@ if __name__ == "__main__":
             os.makedirs(model_save_dir, exist_ok=True)
 
             torch.save(model.state_dict(), f'{model_save_dir}/unet.pt')
-            fig, ax = plt.subplots()
             plt.clf()
+            fig, ax = plt.subplots()
             ax.plot(range(1, epoch+2), train_losses, label='Training Loss')
             ax.plot(range(1, epoch+2), val_losses, label='Validation Loss')
             ax.set_ylabel('Loss/Error')
