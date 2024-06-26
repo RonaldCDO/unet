@@ -145,8 +145,8 @@ if __name__ == "__main__":
             os.makedirs(model_save_dir, exist_ok=True)
 
             torch.save(model.state_dict(), f'{model_save_dir}/unet.pt')
-            plt.clf()
             fig, ax = plt.subplots()
+            plt.clf()
             ax.plot(range(1, epoch+2), train_losses, label='Training Loss')
             ax.plot(range(1, epoch+2), val_losses, label='Validation Loss')
             ax.set_ylabel('Loss/Error')
@@ -175,6 +175,7 @@ if __name__ == "__main__":
             plt.savefig(f'{model_save_dir}/iou.png')
 
             plt.clf()
+            fig, ax = plt.subplots()
             ax.plot(range(1, epoch+2), train_dice_scores, label='Training Dice')
             ax.plot(range(1, epoch+2), val_dice_scores, label='Validation Dice')
             ax.set_ylabel('Dice')
