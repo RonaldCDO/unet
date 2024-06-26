@@ -2,6 +2,7 @@ import os
 from PIL import Image
 from torch.utils.data.dataset import Dataset
 from torchvision import transforms
+import torch
 
 class PlantSegmentationDataset(Dataset):
     def __init__(self, root_path, test=False):
@@ -17,11 +18,23 @@ class PlantSegmentationDataset(Dataset):
             transforms.Resize((512, 512)),
             transforms.ToTensor()])
 
+    def preprocess_mask(self, mask):
+        if not isinstance(mask, torch.Tensor):
+            mask = transforms.ToTensor()(mask)
+
+        mask = (mask != 0.0).float()
+
+        return mask
+
     def __getitem__(self, index):
         img = Image.open(self.images[index]).convert("RGB")
         mask = Image.open(self.masks[index]).convert("L")
 
-        return self.transform(img), self.transform(mask)
+        mask = self.transform(mask)
+
+        mask = self.preprocess_mask(mask)
+
+        return self.transform(img), mask
 
     def __len__(self):
         return len(self.images)

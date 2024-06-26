@@ -1,6 +1,7 @@
 import os
 import torch
 import matplotlib.pyplot as plt
+import sys
 from torchvision import transforms
 from PIL import Image
 
@@ -31,7 +32,7 @@ def pred_show_image_grid(data_path, model_pt, device, inference_path):
         pred_mask = pred_mask.squeeze(0).cpu().detach()
         pred_mask = pred_mask.permute(1, 2, 0).squeeze()
 
-        pred_mask = (pred_mask > 0.1).float()
+        pred_mask = (pred_mask > 0.5).float()
 
         orig_mask = orig_mask.cpu().detach()
         orig_mask = orig_mask.permute(1, 2, 0).squeeze()
@@ -139,8 +140,10 @@ if __name__ == '__main__':
     INFERENCE_PATH=os.getenv('INFERENCE_PATH')
 
     device = 'cuda' if torch.cuda.is_available() else 'cpu'
-    pred_show_image_grid(DATA_PATH, MODEL_PATH, device, INFERENCE_PATH)
-    # single_image_inference(SINGLE_IMG_PATH, MODEL_PATH, device, INFERENCE_PATH)
+    if sys.argv[1] == 'single':
+        single_image_inference(SINGLE_IMG_PATH, MODEL_PATH, device, INFERENCE_PATH)
+    if sys.argv[1] == 'group':
+        pred_show_image_grid(DATA_PATH, MODEL_PATH, device, INFERENCE_PATH)
 
 
 
