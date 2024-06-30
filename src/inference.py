@@ -1,6 +1,7 @@
 import os
 import torch
 import matplotlib.pyplot as plt
+import sys
 from torchvision import transforms
 from PIL import Image
 
@@ -31,7 +32,7 @@ def pred_show_image_grid(data_path, model_pt, device, inference_path):
         pred_mask = pred_mask.squeeze(0).cpu().detach()
         pred_mask = pred_mask.permute(1, 2, 0).squeeze()
 
-        pred_mask = (pred_mask > 0.1).float()
+        pred_mask = (pred_mask > 0.5).float()
 
         orig_mask = orig_mask.cpu().detach()
         orig_mask = orig_mask.permute(1, 2, 0).squeeze()
@@ -70,7 +71,7 @@ def pred_show_image_grid(data_path, model_pt, device, inference_path):
             ax.imshow(plot_images[3*len(image_dataset) + img_idx])
         ax.set_title(titles[img_type_idx])
         ax.axis('off')
-    plt.savefig(f'{inference_path}group_image_inference')
+    plt.savefig(f'{inference_path}/group_image_inference')
     plt.show()
  
 def single_image_inference(img_pt, model_pt, device, inference_path):
@@ -89,22 +90,10 @@ def single_image_inference(img_pt, model_pt, device, inference_path):
         pred_mask = model(img)
         pred_mask = torch.sigmoid(pred_mask)
 
-
-    # debug
-    # print("Raw model output (min, max):", pred_mask.min().item(), pred_mask.max().item())
-
-
     pred_mask = pred_mask.squeeze(0).cpu().detach()
     pred_mask = pred_mask.permute(1, 2, 0).squeeze()
 
-    # threshold verification
-    # plt.figure()
-    # plt.imshow(pred_mask, cmap='gray')
-    # plt.title('Model Output Before Thresholding')
-    # plt.colorbar()
-    # plt.show()
-
-    pred_mask = (pred_mask > 0.1).float()
+    pred_mask = (pred_mask > 0.5).float()
 
     img_cpu = img.squeeze(0).cpu().numpy().transpose(1,2,0)
 
@@ -129,7 +118,7 @@ def single_image_inference(img_pt, model_pt, device, inference_path):
         else:
             plt.imshow(overlay)
             plt.title('Segmentation Overlay')
-    plt.savefig(f'{inference_path}single_image_inference.png')
+    plt.savefig(f'{inference_path}/single_image_inference.png')
     plt.show()
 
 if __name__ == '__main__':
@@ -139,8 +128,10 @@ if __name__ == '__main__':
     INFERENCE_PATH=os.getenv('INFERENCE_PATH')
 
     device = 'cuda' if torch.cuda.is_available() else 'cpu'
-    pred_show_image_grid(DATA_PATH, MODEL_PATH, device, INFERENCE_PATH)
-    # single_image_inference(SINGLE_IMG_PATH, MODEL_PATH, device, INFERENCE_PATH)
+    if sys.argv[1] == 'single':
+        single_image_inference(SINGLE_IMG_PATH, MODEL_PATH, device, INFERENCE_PATH)
+    if sys.argv[1] == 'group':
+        pred_show_image_grid(DATA_PATH, MODEL_PATH, device, INFERENCE_PATH)
 
 
 
